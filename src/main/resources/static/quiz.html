@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizApp - Quiz</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center" id="questionTitle">Loading Question...</h2>
+    <div class="row text-center">
+        <div class="col-md-6 mt-3">
+            <button class="btn btn-outline-primary option-btn" onclick="submitAnswer(1)">Option 1</button>
+        </div>
+        <div class="col-md-6 mt-3">
+            <button class="btn btn-outline-primary option-btn" onclick="submitAnswer(2)">Option 2</button>
+        </div>
+        <div class="col-md-6 mt-3">
+            <button class="btn btn-outline-primary option-btn" onclick="submitAnswer(3)">Option 3</button>
+        </div>
+        <div class="col-md-6 mt-3">
+            <button class="btn btn-outline-primary option-btn" onclick="submitAnswer(4)">Option 4</button>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        <button class="btn btn-success" onclick="nextQuestion()">Next Question</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let questions = [];
+
+    $(document).ready(function() {
+        $.get("/question/random/5", function(data) {
+            questions = data;
+            loadQuestion();
+        });
+    });
+
+    function loadQuestion() {
+        if (currentQuestionIndex < questions.length) {
+            const question = questions[currentQuestionIndex];
+            $('#questionTitle').text(question.questionTitle);
+            $('.option-btn').each(function(index) {
+                $(this).text(question["option" + (index + 1)]);
+            });
+        } else {
+            window.location.href = "result.html?score=" + score;
+        }
+    }
+
+    function submitAnswer(selectedOption) {
+        const correctOption = questions[currentQuestionIndex].rightAnswer;
+        if (questions[currentQuestionIndex]["option" + selectedOption] === correctOption) {
+            score++;
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+</script>
+</body>
+</html>
